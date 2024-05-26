@@ -93,25 +93,37 @@ void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
 
 
 
-void generar_imagen(vector<vector<vector<int>>> matriz_imagen) {
-    int filas = matriz_imagen.size();
-    int columnas = matriz_imagen[0].size();
+void generar_imagen(vector<unsigned char> imagen_vector, string nombre_imagen_salida) {
+    int filas = (imagen_vector[0] << 8) + imagen_vector[1];
+    int columnas = (imagen_vector[2] << 8) + imagen_vector[3];
+
+    cout << filas << " " << columnas;
 
 
     cv::Mat imagen(filas, columnas, CV_8UC3);
 
-    for (int i = 0; i < filas; i++) {
-        for (int j = 0; j < columnas; j++) {
+    vector<unsigned char> pixel_actual;
+    for (int color = 3; color < imagen_vector.size(); color++) {
+
+        if (pixel_actual.size() == 3) {
+            int i = (color / 3) / columnas;
+            int j = (color / 3) % columnas;
+
             cv::Vec3b &pixel = imagen.at<cv::Vec3b>(i, j);
 
-            pixel[0] = matriz_imagen[i][j][0];
-            pixel[1] = matriz_imagen[i][j][1];
-            pixel[2] = matriz_imagen[i][j][2];
+            pixel[0] = pixel_actual[1];
+            pixel[1] = pixel_actual[2];
+            pixel[2] = pixel_actual[0];
+
+            pixel_actual = {};
         }
+
+        pixel_actual.push_back(imagen_vector[color]);
+
     }
 
     cv::imshow("imagen leida", imagen);
-    cv::imwrite("imagen_salida.jpg", imagen);
+    cv::imwrite(nombre_imagen_salida, imagen);
     cv::waitKey(0);
 
 

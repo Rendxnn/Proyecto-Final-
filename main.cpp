@@ -30,11 +30,9 @@ int main(int argc, char *argv[]) {
 
 	string nombre_imagen = argv[1];
 
-	vector<unsigned short> imagen = leer_imagen(nombre_imagen);
+	vector<unsigned char> imagen = leer_imagen(nombre_imagen);
 
-	for (unsigned short num: imagen){ 
-		cout << num << " ";
-	}
+	generar_imagen(imagen, nombre_imagen.substr(0, nombre_imagen.size() - 3) + "_salida.jpg");
 
 	return 0;
 }

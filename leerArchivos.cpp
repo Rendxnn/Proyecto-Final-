@@ -106,34 +106,39 @@ vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
 }
 
 
-vector<unsigned short> leer_imagen(string nombre_imagen) {
+vector<unsigned char> leer_imagen(string nombre_imagen) {
 
     cv::Mat imagen = cv::imread(nombre_imagen, cv::IMREAD_COLOR);
 
     if (imagen.empty()) {
         cout << "No se pudo cargar la imagen." << endl;
-        return {{{}}};  
+        return {};  
     }
 
     int filas = imagen.rows;
     int columnas = imagen.cols;
     int canales = imagen.channels();
 
+    cout << "Filas: " << filas << ", Columnas: " << columnas << endl;
+
     cout << "Dimensiones de la imagen: " << imagen.rows << "x" << imagen.cols << endl;
     cout << "Número de canales: " << imagen.channels() << endl;
 
 
-    vector<unsigned short> imagen_leida;
+    vector<unsigned char> imagen_leida;
 
-    imagen_leida.push_back(static_cast<unsigned short>(filas));
-    imagen_leida.push_back(static_cast<unsigned short>(columnas));
+    imagen_leida.push_back(static_cast<unsigned char>(filas >> 8));
+    imagen_leida.push_back(static_cast<unsigned char>(filas & 0xFF));
+
+    imagen_leida.push_back(static_cast<unsigned char>(columnas >> 8));
+    imagen_leida.push_back(static_cast<unsigned char>(columnas & 0xFF));
 
     for (int i = 0; i < filas; ++i) {
         for (int j = 0; j < columnas; ++j) {
 
-            unsigned short azul_actual = static_cast<unsigned short>(imagen.at<Vec3b>(i, j)[0]);
-            unsigned short verde_actual = static_cast<unsigned short>(imagen.at<Vec3b>(i, j)[1]);
-            unsigned short rojo_actual = static_cast<unsigned short>(imagen.at<Vec3b>(i, j)[2]);
+            unsigned char azul_actual = static_cast<unsigned char>(imagen.at<Vec3b>(i, j)[0]);
+            unsigned char verde_actual = static_cast<unsigned char>(imagen.at<Vec3b>(i, j)[1]);
+            unsigned char rojo_actual = static_cast<unsigned char>(imagen.at<Vec3b>(i, j)[2]);
 
             imagen_leida.push_back(azul_actual);
             imagen_leida.push_back(verde_actual);
