@@ -14,6 +14,7 @@ vector<int> comprimir_lzw(const string& entrada) {
 	}
 
 	string actual;
+
 	for (char caracter: entrada) {
 		string temporal = actual + caracter;
 		if (diccionario.find(temporal) != diccionario.end()) {

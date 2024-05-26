@@ -106,9 +106,9 @@ vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
 }
 
 
-vector<vector<vector<int>>> leer_imagen() {
+vector<unsigned short> leer_imagen(string nombre_imagen) {
 
-    cv::Mat imagen = cv::imread("lena.png", cv::IMREAD_COLOR);
+    cv::Mat imagen = cv::imread(nombre_imagen, cv::IMREAD_COLOR);
 
     if (imagen.empty()) {
         cout << "No se pudo cargar la imagen." << endl;
@@ -123,21 +123,24 @@ vector<vector<vector<int>>> leer_imagen() {
     cout << "Número de canales: " << imagen.channels() << endl;
 
 
-    vector<vector<vector<int>>> matriz_imagen(filas, vector<vector<int>>(columnas, vector<int>(3)));
+    vector<unsigned short> imagen_leida;
+
+    imagen_leida.push_back(static_cast<unsigned short>(filas));
+    imagen_leida.push_back(static_cast<unsigned short>(columnas));
 
     for (int i = 0; i < filas; ++i) {
         for (int j = 0; j < columnas; ++j) {
 
-            int azul_actual = static_cast<int>(imagen.at<Vec3b>(i, j)[0]);
-            int verde_actual = static_cast<int>(imagen.at<Vec3b>(i, j)[1]);
-            int rojo_actual = static_cast<int>(imagen.at<Vec3b>(i, j)[2]);
+            unsigned short azul_actual = static_cast<unsigned short>(imagen.at<Vec3b>(i, j)[0]);
+            unsigned short verde_actual = static_cast<unsigned short>(imagen.at<Vec3b>(i, j)[1]);
+            unsigned short rojo_actual = static_cast<unsigned short>(imagen.at<Vec3b>(i, j)[2]);
 
-            vector<int> pixel_actual = {azul_actual, verde_actual, rojo_actual};
-
-            matriz_imagen[i][j] = pixel_actual;
+            imagen_leida.push_back(azul_actual);
+            imagen_leida.push_back(verde_actual);
+            imagen_leida.push_back(rojo_actual);
 
         }
     }
 
-    return matriz_imagen;
+    return imagen_leida;
 }

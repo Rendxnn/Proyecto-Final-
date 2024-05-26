@@ -30,13 +30,11 @@ int main(int argc, char *argv[]) {
 
 	string nombre_imagen = argv[1];
 
-	vector<vector<vector<int>>> matriz_imagen = leer_imagen();
+	vector<unsigned short> imagen = leer_imagen(nombre_imagen);
 
-	escribir_archivo_binario(matriz_imagen);
-
-	vector<vector<vector<int>>> matriz_leida_binario = leer_archivo_binario("binario.bin");
-
-	generar_imagen(matriz_leida_binario);
+	for (unsigned short num: imagen){ 
+		cout << num << " ";
+	}
 
 	return 0;
 }
