@@ -50,10 +50,10 @@ vector<vector<int>> leer_archivo_texto(string nombre_archivo) {
 
 
 
-vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
+vector<int> leer_archivo_binario(string nombre_archivo) {
 
     ifstream archivo(nombre_archivo, ios::binary);
-    vector<vector<vector<int>>> matriz;
+    vector<int> imagen;
 
     if (archivo.is_open()) {
         string nombre;
@@ -87,22 +87,16 @@ vector<vector<vector<int>>> leer_archivo_binario(string nombre_archivo) {
         int filas = static_cast<int>(binario_filas);
         int columnas = static_cast<int>(binario_columnas);
 
-        matriz.resize(filas, vector<vector<int>>(columnas, vector<int>(3)));
-
-        for (int i = 0; i < filas; ++i) {
-            for (int j = 0; j < columnas; ++j) {
-                for (int k = 0; k < 3; ++k) {
-                    unsigned char binario_color;
-                    archivo.read(reinterpret_cast<char*>(&binario_color), sizeof(binario_color));
-                    matriz[i][j][k] = static_cast<int>(static_cast<unsigned char>(binario_color));
-                }
-            }
+        unsigned char binario_color;
+        while (archivo.read(reinterpret_cast<char*>(&binario_color), sizeof(binario_color))) {
+            imagen.push_back(static_cast<int>(static_cast<unsigned char>(binario_color)));
         }
+       
 
         archivo.close();
     }
 
-    return matriz;
+    return imagen;
 }
 
 
@@ -118,8 +112,6 @@ vector<unsigned char> leer_imagen(string nombre_imagen) {
     int filas = imagen.rows;
     int columnas = imagen.cols;
     int canales = imagen.channels();
-
-    cout << "Filas: " << filas << ", Columnas: " << columnas << endl;
 
     cout << "Dimensiones de la imagen: " << imagen.rows << "x" << imagen.cols << endl;
     cout << "Número de canales: " << imagen.channels() << endl;
@@ -148,4 +140,17 @@ vector<unsigned char> leer_imagen(string nombre_imagen) {
     }
 
     return imagen_leida;
+}
+
+void jpg_a_raw(vector<unsigned char> imagen_vector, string nombre_imagen_raw) {
+
+    ofstream archivo_salida(nombre_imagen_raw, ios::out | ios::binary);
+    if (!archivo_salida) {
+        cerr << "No se pudo abrir el archivo RAW para escribir: " << nombre_imagen_raw << endl;
+        return;
+    }
+
+    archivo_salida.write(reinterpret_cast<char*>(imagen_vector.data()), imagen_vector.size());
+    archivo_salida.close();
+
 }

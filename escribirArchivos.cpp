@@ -84,34 +84,34 @@ void generar_imagen(vector<unsigned char> imagen_vector, string nombre_imagen_sa
     int filas = (imagen_vector[0] << 8) + imagen_vector[1];
     int columnas = (imagen_vector[2] << 8) + imagen_vector[3];
 
-    cout << filas << " " << columnas;
+    cout << "Filas: " << filas << ", Columnas: " << columnas << endl;
 
-
+    // Crear un objeto Mat para manipular la imagen si es necesario
     cv::Mat imagen(filas, columnas, CV_8UC3);
 
-    vector<unsigned char> pixel_actual;
-    for (int color = 3; color < imagen_vector.size(); color++) {
-
-        if (pixel_actual.size() == 3) {
-            int i = (color / 3) / columnas;
-            int j = (color / 3) % columnas;
-
+    int indice = 4; // Empezamos después de las dimensiones
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j) {
             cv::Vec3b &pixel = imagen.at<cv::Vec3b>(i, j);
-
-            pixel[0] = pixel_actual[1];
-            pixel[1] = pixel_actual[2];
-            pixel[2] = pixel_actual[0];
-
-            pixel_actual = {};
+            pixel[0] = imagen_vector[indice++]; // azul
+            pixel[1] = imagen_vector[indice++]; // verde
+            pixel[2] = imagen_vector[indice++]; // rojo
         }
-
-        pixel_actual.push_back(imagen_vector[color]);
-
     }
 
+    // Mostrar la imagen en una ventana
     cv::imshow("imagen leida", imagen);
-    cv::imwrite(nombre_imagen_salida, imagen);
     cv::waitKey(0);
 
+    // Guardar los datos en formato RAW
+    ofstream archivo_salida(nombre_imagen_salida, ios::out | ios::binary);
+    if (!archivo_salida) {
+        cerr << "No se pudo abrir el archivo para escribir." << endl;
+        return;
+    }
 
+    // Escribir los datos de píxeles en el archivo
+    archivo_salida.write(reinterpret_cast<char*>(&imagen_vector[4]), filas * columnas * 3);
+
+    archivo_salida.close();
 }
