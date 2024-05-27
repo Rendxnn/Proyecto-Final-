@@ -4,7 +4,7 @@
 
 using namespace std;
 
-vector<int> comprimir_lzw(const string& entrada) {
+vector<int> comprimir_lzw(const vector<unsigned char>& entrada) {
 	vector<int> comprimido;
 	unordered_map<string, int> diccionario;
 

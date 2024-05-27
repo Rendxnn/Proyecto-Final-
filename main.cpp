@@ -1,6 +1,7 @@
 //g++ -o prueba main.cpp  -std=c++11 `pkg-config --cflags --libs opencv4`
 #include "escribirArchivos.cpp"
 #include "leerArchivos.cpp"
+#include "LZW.cpp"
 using namespace std;
 
 
@@ -32,7 +33,13 @@ int main(int argc, char *argv[]) {
 
 	vector<unsigned char> imagen = leer_imagen(nombre_imagen);
 
-	generar_imagen(imagen, nombre_imagen.substr(0, nombre_imagen.size() - 3) + "_salida.jpg");
+	vector<int> imagen_comprimida = comprimir_lzw(imagen);
+
+	cout << imagen.size() << " " << imagen_comprimida.size();
+
+	escribir_archivo_binario(nombre_imagen.substr(0, nombre_imagen.size() - 4) + ".bin", imagen_comprimida);
+
+	generar_imagen(imagen, nombre_imagen.substr(0, nombre_imagen.size() - 4) + "_salida.jpg");
 
 	return 0;
 }

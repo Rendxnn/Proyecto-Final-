@@ -28,7 +28,7 @@ void escribir_archivo_plano(vector<vector<vector<int>>> matriz) {
 }
 
 
-void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
+void escribir_archivo_binario(string nombre_archivo, vector<int> imagen_comprimida) {
 
     string nombre;
     string edad;
@@ -39,7 +39,7 @@ void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
 
     vector<int> longitudes_maximas = {30, 3, 3, 3, 10, 100};
 
-    ofstream archivo("binario.bin", ios::binary);
+    ofstream archivo(nombre_archivo, ios::binary);
 
     if (archivo.is_open()) {
         
@@ -70,22 +70,9 @@ void escribir_archivo_binario(vector<vector<vector<int>>> matriz) {
         }
 
 
-        int filas = matriz.size();
-        int columnas = matriz[0].size();
-
-        unsigned short binario_filas = static_cast<unsigned short>(filas);
-        unsigned short binario_columnas = static_cast<unsigned short>(columnas);
-
-        archivo.write(reinterpret_cast<const char*>(&binario_filas), sizeof(binario_filas));
-        archivo.write(reinterpret_cast<const char*>(&binario_columnas), sizeof(binario_columnas));
-
-        for (vector<vector<int>> fila: matriz) {
-            for (vector<int> pixel: fila) {
-                for (int color: pixel) {
-                    unsigned char binario = static_cast<unsigned char>(color);
-                    archivo.write(reinterpret_cast<const char*>(&binario), sizeof(binario)); 
-                }
-            }
+        for (int numero: imagen_comprimida) {
+            unsigned char binario = static_cast<unsigned char>(numero);
+            archivo.write(reinterpret_cast<const char*>(&binario), sizeof(binario)); 
         }
     }
 }
