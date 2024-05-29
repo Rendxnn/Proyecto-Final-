@@ -83,20 +83,11 @@ vector<int> leer_archivo_binario(string nombre_archivo) {
             cout << nombre_dato << ": " << dato_actual << endl;
         }
 
-
-        unsigned short binario_filas, binario_columnas;
-        archivo.read(reinterpret_cast<char*>(&binario_filas), sizeof(binario_filas));
-        archivo.read(reinterpret_cast<char*>(&binario_columnas), sizeof(binario_columnas));
-
-        int filas = static_cast<int>(binario_filas);
-        int columnas = static_cast<int>(binario_columnas);
-
-        unsigned char binario_color;
-        while (archivo.read(reinterpret_cast<char*>(&binario_color), sizeof(binario_color))) {
-            imagen.push_back(static_cast<int>(static_cast<unsigned char>(binario_color)));
+        int valor_actual;
+        while (archivo.read(reinterpret_cast<char*>(&valor_actual), sizeof(int))) {
+            imagen.push_back(valor_actual);
         }
        
-
         archivo.close();
     }
 
@@ -106,16 +97,8 @@ vector<int> leer_archivo_binario(string nombre_archivo) {
 
 
 
-void jpg_a_raw(vector<int> imagen_vector, string nombre_imagen_raw) {
+void generar_raw(string imagen, string nombre_imagen_raw) {
 
-    ofstream archivo_salida(nombre_imagen_raw, ios::out | ios::binary);
-    if (!archivo_salida) {
-        cerr << "No se pudo abrir el archivo RAW para escribir: " << nombre_imagen_raw << endl;
-        return;
-    }
-
-    archivo_salida.write(reinterpret_cast<char*>(imagen_vector.data()), imagen_vector.size());
-    archivo_salida.close();
-
+    return;
 }
 

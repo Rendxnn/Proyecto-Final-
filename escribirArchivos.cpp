@@ -51,8 +51,7 @@ void escribir_archivo_binario(string nombre_archivo, vector<int> imagen_comprimi
 
 
         for (int numero: imagen_comprimida) {
-            unsigned char binario = static_cast<unsigned char>(numero);
-            archivo.write(reinterpret_cast<const char*>(&binario), sizeof(binario)); 
+            archivo.write(reinterpret_cast<char*>(&numero), sizeof(numero)); 
         }
     }
 }
