@@ -4,11 +4,11 @@
 ### Sofía Mendieta
 ### Samuel Rendón
 
+<hr>
 
 
 ## PREGUNTAS
 
-<hr>
 
 ### 1. ¿El orden entre encriptar y comprimir afecta el resultado?
 
