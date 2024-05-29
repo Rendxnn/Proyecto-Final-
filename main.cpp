@@ -15,11 +15,12 @@ int main(int argc, char *argv[]) {
 	string nombre_imagen = argv[1];
 	string clave_cifrado = argv[2];
 	string nombre_archivo_binario = nombre_imagen.substr(0, nombre_imagen.length() - 4) + ".bin";
+	string nombre_archivo_raw = nombre_imagen.substr(0, nombre_imagen.length() - 4) + ".raw";
 
 
-	//LEER IMAGEN
+	//LEER IMAGEN Y GENERAR RAW
 	string imagen = leer_imagen(nombre_imagen);
-	cout << "Imagen leida correctamente" << endl;
+	generar_raw(nombre_imagen, nombre_archivo_raw);
 
 
 	//CIFRAR Y COMPRIMIR

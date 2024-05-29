@@ -97,8 +97,24 @@ vector<int> leer_archivo_binario(string nombre_archivo) {
 
 
 
-void generar_raw(string imagen, string nombre_imagen_raw) {
+void generar_raw(const std::string &nombre_imagen, const std::string &nombre_raw) {
+    cv::Mat imagen = cv::imread(nombre_imagen, cv::IMREAD_UNCHANGED);
 
-    return;
+    if (imagen.empty()) {
+        std::cerr << "Error: No se pudo abrir la imagen " << nombre_imagen << std::endl;
+        return;
+    }
+
+    std::ofstream rawFile(nombre_raw, std::ios::out | std::ios::binary);
+    if (!rawFile) {
+        std::cerr << "Error: No se pudo crear el archivo " << nombre_raw << std::endl;
+        return;
+    }
+
+    rawFile.write(reinterpret_cast<const char*>(imagen.data), imagen.total() * imagen.elemSize());
+
+    rawFile.close();
+
+    std::cout << "Imagen guardada exitosamente en formato RAW en " << nombre_raw << std::endl;
 }
 
