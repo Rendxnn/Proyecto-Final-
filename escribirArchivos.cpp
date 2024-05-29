@@ -5,27 +5,7 @@
 #include <opencv2/opencv.hpp>
 
 using namespace std; 
-
-
-void escribir_archivo_plano(vector<vector<vector<int>>> matriz) {
-	ofstream archivo("plano.txt");
-
-	if (archivo.is_open()) {
-		archivo << matriz.size() << " " << matriz[0].size() << endl;
-		for (vector<vector<int>> fila: matriz) {
-			for (vector<int> pixel: fila) {
-                for (int color: pixel) {
-                    archivo << color << " ";
-                }
-			}
-			archivo << endl;
-		}
-		archivo.close();
-	}
-	else {
-		cout << "error al escribir el archivo plano";
-	}
-}
+using namespace cv;
 
 
 void escribir_archivo_binario(string nombre_archivo, vector<int> imagen_comprimida) {
@@ -80,38 +60,34 @@ void escribir_archivo_binario(string nombre_archivo, vector<int> imagen_comprimi
 
 
 
-void generar_imagen(vector<unsigned char> imagen_vector, string nombre_imagen_salida) {
-    int filas = (imagen_vector[0] << 8) + imagen_vector[1];
-    int columnas = (imagen_vector[2] << 8) + imagen_vector[3];
+int extraer_numero(const string &imagen_str, size_t &indice, int longitud) {
+    int numero = stoi(imagen_str.substr(indice, longitud));
+    indice += longitud;
+    return numero;
+}
 
-    cout << "Filas: " << filas << ", Columnas: " << columnas << endl;
 
-    // Crear un objeto Mat para manipular la imagen si es necesario
-    cv::Mat imagen(filas, columnas, CV_8UC3);
+void construir_imagen(const string &imagen_str, const string &nombre_archivo) {
+    size_t indice = 0;
 
-    int indice = 4; // Empezamos después de las dimensiones
+    // Extraer dimensiones de la imagen
+    int filas = extraer_numero(imagen_str, indice, 3); // Asumiendo que 'formatear_numero' usa 4 dígitos
+    int columnas = extraer_numero(imagen_str, indice, 3);
+
+    Mat imagen(filas, columnas, CV_8UC3);
+
     for (int i = 0; i < filas; ++i) {
         for (int j = 0; j < columnas; ++j) {
-            cv::Vec3b &pixel = imagen.at<cv::Vec3b>(i, j);
-            pixel[0] = imagen_vector[indice++]; // azul
-            pixel[1] = imagen_vector[indice++]; // verde
-            pixel[2] = imagen_vector[indice++]; // rojo
+            unsigned char azul_actual = extraer_numero(imagen_str, indice, 3); // Asumiendo que 'formatear_numero' usa 3 dígitos
+            unsigned char verde_actual = extraer_numero(imagen_str, indice, 3);
+            unsigned char rojo_actual = extraer_numero(imagen_str, indice, 3);
+
+            imagen.at<Vec3b>(i, j)[0] = azul_actual;
+            imagen.at<Vec3b>(i, j)[1] = verde_actual;
+            imagen.at<Vec3b>(i, j)[2] = rojo_actual;
         }
     }
 
-    // Mostrar la imagen en una ventana
-    cv::imshow("imagen leida", imagen);
-    cv::waitKey(0);
-
-    // Guardar los datos en formato RAW
-    ofstream archivo_salida(nombre_imagen_salida, ios::out | ios::binary);
-    if (!archivo_salida) {
-        cerr << "No se pudo abrir el archivo para escribir." << endl;
-        return;
-    }
-
-    // Escribir los datos de píxeles en el archivo
-    archivo_salida.write(reinterpret_cast<char*>(&imagen_vector[4]), filas * columnas * 3);
-
-    archivo_salida.close();
+    // Guardar la imagen reconstruida
+    imwrite(nombre_archivo, imagen);
 }

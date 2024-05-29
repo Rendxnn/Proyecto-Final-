@@ -4,51 +4,55 @@
 #include <sstream>
 #include <bitset>
 #include <opencv2/opencv.hpp>
+#include <iomanip> // Para std::setw y std::setfill
 
 using namespace cv;
 using namespace std;
 
-
-
-vector<vector<int>> leer_archivo_texto(string nombre_archivo) {
-	ifstream archivo(nombre_archivo);
-	vector<int> dimensiones(2, 0);
-
-
-	if (archivo.is_open()) {
-		vector<int> fila;
-		string numero;
-		string linea;
-
-		getline(archivo, linea);
-		stringstream stream(linea);
-		while (getline(stream, numero, ' ')) {
-			dimensiones.push_back(stoi(numero));
-		}
-
-		int filas = dimensiones[0];
-		int columnas = dimensiones[1];
-
-		vector<vector<int>> matriz(filas, vector<int>(columnas));
-
-
-		while (getline(archivo, linea)) {
-			stringstream stream(linea);
-			while (getline(stream, numero, ' ')) {
-				fila.push_back(stoi(numero));
-			}
-		matriz.push_back(fila);
-		fila = {};
-		}
-		return matriz;
-	}
-	else {
-		cout << "hubo un problema leyendo el archivo";
-		return {{}};
-	}
+string formatear_numero(int numero) {
+    std::ostringstream oss;
+    oss << std::setw(3) << std::setfill('0') << numero;
+    return oss.str();
 }
 
+string leer_imagen(string nombre_imagen) {
 
+    cv::Mat imagen = cv::imread(nombre_imagen, cv::IMREAD_COLOR);
+
+    if (imagen.empty()) {
+        cout << "No se pudo cargar la imagen." << endl;
+        return {};  
+    }
+
+    int filas = imagen.rows;
+    int columnas = imagen.cols;
+
+    int canales = imagen.channels();
+
+    cout << "Dimensiones de la imagen: " << imagen.rows << "x" << imagen.cols << endl;
+    cout << "Número de canales: " << imagen.channels() << endl;
+
+
+    string imagen_leida = "";
+
+    imagen_leida += formatear_numero(filas);
+    imagen_leida += formatear_numero(columnas); 
+
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j) {
+
+            unsigned char azul_actual = imagen.at<Vec3b>(i, j)[0];
+            unsigned char verde_actual = imagen.at<Vec3b>(i, j)[1];
+            unsigned char rojo_actual = imagen.at<Vec3b>(i, j)[2];
+
+            imagen_leida += formatear_numero(azul_actual);
+            imagen_leida += formatear_numero(verde_actual);
+            imagen_leida += formatear_numero(rojo_actual);
+        }
+    }
+
+    return imagen_leida;
+}
 
 vector<int> leer_archivo_binario(string nombre_archivo) {
 
@@ -100,49 +104,9 @@ vector<int> leer_archivo_binario(string nombre_archivo) {
 }
 
 
-vector<unsigned char> leer_imagen(string nombre_imagen) {
-
-    cv::Mat imagen = cv::imread(nombre_imagen, cv::IMREAD_COLOR);
-
-    if (imagen.empty()) {
-        cout << "No se pudo cargar la imagen." << endl;
-        return {};  
-    }
-
-    int filas = imagen.rows;
-    int columnas = imagen.cols;
-    int canales = imagen.channels();
-
-    cout << "Dimensiones de la imagen: " << imagen.rows << "x" << imagen.cols << endl;
-    cout << "Número de canales: " << imagen.channels() << endl;
 
 
-    vector<unsigned char> imagen_leida;
-
-    imagen_leida.push_back(static_cast<unsigned char>(filas >> 8));
-    imagen_leida.push_back(static_cast<unsigned char>(filas & 0xFF));
-
-    imagen_leida.push_back(static_cast<unsigned char>(columnas >> 8));
-    imagen_leida.push_back(static_cast<unsigned char>(columnas & 0xFF));
-
-    for (int i = 0; i < filas; ++i) {
-        for (int j = 0; j < columnas; ++j) {
-
-            unsigned char azul_actual = static_cast<unsigned char>(imagen.at<Vec3b>(i, j)[0]);
-            unsigned char verde_actual = static_cast<unsigned char>(imagen.at<Vec3b>(i, j)[1]);
-            unsigned char rojo_actual = static_cast<unsigned char>(imagen.at<Vec3b>(i, j)[2]);
-
-            imagen_leida.push_back(azul_actual);
-            imagen_leida.push_back(verde_actual);
-            imagen_leida.push_back(rojo_actual);
-
-        }
-    }
-
-    return imagen_leida;
-}
-
-void jpg_a_raw(vector<unsigned char> imagen_vector, string nombre_imagen_raw) {
+void jpg_a_raw(vector<int> imagen_vector, string nombre_imagen_raw) {
 
     ofstream archivo_salida(nombre_imagen_raw, ios::out | ios::binary);
     if (!archivo_salida) {
@@ -154,3 +118,4 @@ void jpg_a_raw(vector<unsigned char> imagen_vector, string nombre_imagen_raw) {
     archivo_salida.close();
 
 }
+

@@ -4,7 +4,7 @@
 
 using namespace std;
 
-vector<int> comprimir_lzw(const vector<unsigned char>& entrada) {
+vector<int> comprimir_lzw(const string& entrada) {
 	vector<int> comprimido;
 	unordered_map<string, int> diccionario;
 
@@ -14,7 +14,6 @@ vector<int> comprimir_lzw(const vector<unsigned char>& entrada) {
 	}
 
 	string actual;
-
 	for (char caracter: entrada) {
 		string temporal = actual + caracter;
 		if (diccionario.find(temporal) != diccionario.end()) {
@@ -35,35 +34,34 @@ vector<int> comprimir_lzw(const vector<unsigned char>& entrada) {
 }
 
 
-vector<unsigned char> descomprimir_lzw(const vector<int>& comprimido) {
-    vector<unsigned char> salida;
-    unordered_map<int, string> diccionario;
+string descomprimir_lzw(const vector<int>& comprimido) {
+	unordered_map<int, string> diccionario;
+	string descomprimido;
 
-    for (int i = 0; i < 256; i++) {
-        diccionario[i] = string(1, char(i));
-    }
+	for (int i = 0; i < 256; i++) {
+		string caracter(1, char(i));
+		diccionario[i] = caracter;
+	}
 
-    string actual = diccionario[comprimido[0]];
-    salida.insert(salida.end(), actual.begin(), actual.end());
-    string previo = actual;
+	string previo(1, char(comprimido[0]));
+	string actual;
+	actual += previo;
+	descomprimido += previo;
 
-    for (size_t i = 1; i < comprimido.size(); ++i) {
-        int codigo = comprimido[i];
-        string entrada;
-        
-        if (diccionario.find(codigo) != diccionario.end()) {
-            entrada = diccionario[codigo];
-        } else if (codigo == diccionario.size()) {
-            entrada = previo + previo[0];
-        } else {
-            throw runtime_error("Código de compresión LZW inválido.");
-        }
+	for (size_t i = 1; i < comprimido.size(); i++) {
+		int valor = comprimido[i];
 
-        salida.insert(salida.end(), entrada.begin(), entrada.end());
+		if (diccionario.find(valor) == diccionario.end()) {
+			actual = previo + previo[0];
+		}
+		else {
+			actual = diccionario[valor];
+		}
 
-        diccionario[diccionario.size()] = previo + entrada[0];
-        previo = entrada;
-    }
+		descomprimido += actual;
+		diccionario[diccionario.size()] = previo + actual[0];
+		previo = actual;
+	}
 
-    return salida;
+	return descomprimido;
 }
